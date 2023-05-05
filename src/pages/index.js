@@ -14,6 +14,7 @@ const Home = () => {
   const [totalSupply, setTotalSupply] = useState('');
   const [signer, setSigner] = useState('');
   const [deployedAddress, setDeployedAddress] = useState('');
+  const [loading, setLoading] = useState(false);
 
   async function connectWallet () {
     try {
@@ -40,6 +41,8 @@ const Home = () => {
       return;
     }
 
+    setLoading(true);
+
     try {
       const factory = new ethers.ContractFactory(ERC20JSON, bytecode, signer);
       const name = tokenName;
@@ -49,6 +52,7 @@ const Home = () => {
       const contract = await factory.deploy(name, symbol, supply, owner);
       await contract.deployed();
       setDeployedAddress(contract.address);
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -133,7 +137,7 @@ const Home = () => {
         className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
         type="submit"
       >
-        Deploy Token
+        {loading ? "Loading..." : "Deploy Token"}
       </button>
     </form>
     {deployedAddress && <p>Contract deployed at address: {deployedAddress}</p>}
